@@ -1,38 +1,194 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#0b0e13">
-  <title>UnoVelho</title>
-  <link rel="stylesheet" href="/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uno Velho Matematixa</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="/socket.io/socket.io.js"></script>
 </head>
-<body>
-  <div id="intro" class="screen intro"><div class="brand">VELHOGAMES</div><div class="brand sub">UNOVELHO</div></div>
-  <main id="app" class="app hidden">
-    <section id="auth" class="panel auth-panel">
-      <div class="logo">🃏 <span>UnoVelho</span></div>
-      <p class="muted">Entre ou crie sua conta.</p>
-      <div class="tabs"><button class="tab active" data-auth="login">Entrar</button><button class="tab" data-auth="register">Cadastrar</button></div>
-      <form id="authForm"><input id="username" placeholder="Usuário" autocomplete="username" required><input id="password" type="password" placeholder="Senha" autocomplete="current-password" required><button class="primary" type="submit">Continuar</button></form>
-      <p id="authMsg" class="message"></p>
-    </section>
+<body class="blur-background">
 
-    <section id="game" class="hidden">
-      <header class="topbar"><div class="logo">🃏 UnoVelho</div><div id="userInfo"></div><button id="logout" class="ghost">Sair</button></header>
-      <div class="layout">
-        <aside class="sidebar"><button class="nav active" data-page="home">🎮 Jogar</button><button class="nav" data-page="online">🌐 Online</button><button class="nav" data-page="shop">🛒 Loja</button><button class="nav" data-page="character">👤 Personagem</button><button class="nav" data-page="settings">⚙️ Configuração</button><button id="adminNav" class="nav hidden" data-page="admin">👑 Administração</button></aside>
-        <section class="content">
-          <div id="home" class="page"><h1>Bem-vindo ao UnoVelho</h1><p class="muted">Escolha como quer jogar.</p><div class="cards"><button class="mode" data-action="solo">🎯<b>Solo</b><span>Contra a máquina</span></button><button class="mode" data-action="training">🧠<b>Treinamento</b><span>Aprenda e pratique</span></button><button class="mode" data-action="online">🌐<b>Online</b><span>Jogue com outras pessoas</span></button></div></div>
-          <div id="online" class="page hidden"><div class="row between"><div><h1>Jogar Online</h1><p class="muted">Salas com porta de 4 caracteres.</p></div><button id="createRoom" class="primary">Criar sala</button></div><div id="rooms" class="room-list"></div></div>
-          <div id="shop" class="page hidden"><h1>Loja</h1><div class="cards"><div class="item">🃏 Skin clássica <b>100 moedas</b></div><div class="item">✨ Skin Neon <b>250 moedas</b></div><div class="item">🧥 Roupa Taverna <b>300 moedas</b></div></div></div>
-          <div id="character" class="page hidden"><h1>Personagem</h1><div class="character"><div class="avatar">🙂</div><p>Personalização será salva no seu perfil.</p><button class="primary" id="saveCharacter">Salvar configuração</button></div></div>
-          <div id="settings" class="page hidden"><h1>Configurações</h1><label>🎵 Música <input type="checkbox" checked></label><label>🔊 Efeitos <input type="checkbox" checked></label><label>⚡ Qualidade <select><option>Alta</option><option>Média</option><option>Baixa</option></select></label></div>
-          <div id="admin" class="page hidden"><h1>Administração</h1><p class="muted">Comandos são validados no servidor.</p><div class="admin-box"><input id="adminCommand" placeholder="/help"><button id="sendCommand" class="primary">Executar</button><pre id="adminOutput"></pre></div></div>
-        </section>
+  <!-- Fundo Animado com Cartas Desfocadas -->
+  <div class="cards-animation-container">
+    <div class="floating-card-outline card-1"></div>
+    <div class="floating-card-outline card-2"></div>
+    <div class="floating-card-outline card-3"></div>
+    <div class="floating-card-outline card-4"></div>
+  </div>
+
+  <!-- TERMOS DE ACEITE DE COOKIES / CACHE LOCAL -->
+  <div id="termsModal" class="modal-overlay">
+    <div class="modal-content glass-card">
+      <h2>🍪 Aceite de Armazenamento Local</h2>
+      <p>
+        Para garantir o máximo desempenho sem sobrecarregar o banco de dados do servidor, guardamos dados visuais das skins, áudio e assets na memória local (IndexedDB/Cookies) do seu navegador.
+      </p>
+      <button id="btnAcceptTerms" class="btn-primary">Aceitar e Continuar</button>
+    </div>
+  </div>
+
+  <!-- TELA INICIAL / AUTHENTICATION -->
+  <div id="mainContainer" class="container">
+    <h1 class="logo-title">UNO MATEMATIXA</h1>
+
+    <div id="authSection" class="glass-card">
+      <div id="authMessage" class="message"></div>
+      
+      <form id="formLogin" class="form">
+        <h3>Acessar Conta</h3>
+        <input type="text" name="username" placeholder="Usuário" required>
+        <input type="password" name="password" placeholder="Senha" required>
+        <button type="submit" class="btn-primary">Entrar</button>
+      </form>
+      <hr class="divider">
+      <form id="formRegister" class="form">
+        <h3>Criar Conta</h3>
+        <input type="text" name="regUsername" placeholder="Novo Usuário" required>
+        <input type="password" name="regPassword" placeholder="Sua Senha" required>
+        <button type="submit" class="btn-secondary">Cadastrar</button>
+      </form>
+    </div>
+
+    <!-- TELA DE PERSONALIZAÇÃO DE PERSONAGEM (OBRIGATÓRIO PÓS-CADASTRO) -->
+    <div id="characterCreationModal" class="modal-overlay" style="display: none;">
+      <div class="modal-content glass-card wide-modal">
+        <h2>🎨 Crie seu Personagem</h2>
+        <div class="character-preview-box">
+          <div id="avatarPreview" class="avatar-display">🧙‍♂️</div>
+        </div>
+        <div class="customizer-options">
+          <label>Cor de Cabelo: <input type="color" id="hairColorInput" value="#000000"></label>
+          <label>Estilo de Cabelo:
+            <select id="hairStyleSelect">
+              <option value="short">Curto</option>
+              <option value="long">Longo</option>
+              <option value="mohawk">Moicano</option>
+              <option value="afro">Afro</option>
+            </select>
+          </label>
+          <label>Roupas:
+            <select id="outfitSelect">
+              <option value="casual">Casual</option>
+              <option value="tuxedo">Terno CEO</option>
+              <option value="cyber">Cyberpunk</option>
+            </select>
+          </label>
+        </div>
+        <button id="btnSaveCharacter" class="btn-primary">Salvar e Ir ao Lobby</button>
       </div>
-    </section>
-  </main>
-  <script src="/socket.io/socket.io.js"></script><script src="/app.js"></script>
+    </div>
+
+    <!-- LOBBY PRINCIPAL -->
+    <div id="lobbyDashboard" class="glass-card" style="display: none;">
+      <div class="header-user">
+        <div class="user-details">
+          <span id="userAvatarIcon">🧙‍♂️</span>
+          <div>
+            <h2 id="userNameDisplay">Jogador</h2>
+            <span id="userCoinsDisplay">🪙 0 Moedas</span> | <span id="userXpDisplay">⭐ Nível 1 (0 XP)</span>
+          </div>
+        </div>
+        <span id="ceoBadge" class="badge-ceo" style="display:none;">👑 CEO SUPREMO</span>
+      </div>
+
+      <div class="lobby-buttons-grid">
+        <button id="btnOpenGameModes" class="btn-primary btn-giant">🎮 JOGAR</button>
+        <button id="btnOpenShop" class="btn-secondary">🛒 LOJA DE SKINS</button>
+        <button id="btnOpenInventory" class="btn-secondary">🎒 INVENTÁRIO</button>
+        <button id="btnOpenSettings" class="btn-secondary">⚙️ CONFIGURAÇÕES</button>
+      </div>
+
+      <!-- CHAT GLOBAL -->
+      <div class="global-chat-box">
+        <h3>💬 Chat Mundial</h3>
+        <div id="globalChatMessages" class="chat-messages-area"></div>
+        <div class="chat-input-row">
+          <input type="text" id="globalChatInput" placeholder="Digite uma mensagem ou comando...">
+          <button id="btnSendGlobalChat" class="btn-primary">Enviar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL MODOS DE JOGO -->
+    <div id="gameModesModal" class="modal-overlay" style="display: none;">
+      <div class="modal-content glass-card">
+        <h2>Escolha o Modo de Jogo</h2>
+        <div class="modes-grid">
+          <button id="btnModeSolo" class="btn-mode">🤖 JOGAR SOLO (VS BOT)</button>
+          <button id="btnModeOnline" class="btn-mode">🌎 JOGAR ONLINE</button>
+          <button id="btnModeRank" class="btn-mode">🏆 RANK MUNDIAL</button>
+        </div>
+        <button onclick="closeModal('gameModesModal')" class="btn-secondary">Fechar</button>
+      </div>
+    </div>
+
+    <!-- SELEÇÃO DE DIFICULDADE SOLO -->
+    <div id="soloDifficultyModal" class="modal-overlay" style="display: none;">
+      <div class="modal-content glass-card">
+        <h2>Dificuldade do Bot</h2>
+        <button onclick="startSoloGame('easy')" class="btn-difficulty easy">🟢 FÁCIL</button>
+        <button onclick="startSoloGame('medium')" class="btn-difficulty medium">🟡 MÉDIO</button>
+        <button onclick="startSoloGame('hard')" class="btn-difficulty hard">🔴 DIFÍCIL</button>
+        <button onclick="closeModal('soloDifficultyModal')" class="btn-secondary">Voltar</button>
+      </div>
+    </div>
+
+    <!-- MESA DE JOGO (REFERÊNCIA DA IMAGEM) -->
+    <div id="gameArena" class="poker-table-container" style="display: none;">
+      <div class="table-header-hud">
+        <div id="turnTimer" class="timer-circle">24</div>
+        <div id="turnStatus" class="turn-title">SUA VEZ!</div>
+        <div class="audio-toggle-top">
+          <button id="btnToggleAudio" class="btn-small">🔊 Som: ON</button>
+        </div>
+      </div>
+
+      <!-- Mesa de Poker em Perspectiva -->
+      <div class="poker-table map-saloon">
+        <!-- Jogadores ao Redor da Mesa -->
+        <div class="player-seat seat-top">
+          <div class="avatar-circle">🤖</div>
+          <span class="player-label" id="botTopLabel">Bot 1 (7)</span>
+        </div>
+        <div class="player-seat seat-left">
+          <div class="avatar-circle">🤠</div>
+          <span class="player-label">Jogador 2</span>
+        </div>
+        <div class="player-seat seat-right">
+          <div class="avatar-circle">👩‍🏫</div>
+          <span class="player-label">Jogador 3</span>
+        </div>
+
+        <!-- Monte do Centro -->
+        <div class="table-center">
+          <div id="drawPile" class="uno-card deck-back">UNO</div>
+          <div id="discardPile" class="uno-card card-red">5</div>
+        </div>
+
+        <!-- Mão do Jogador (Cartas em Leque na Frente) -->
+        <div id="playerHand" class="player-hand-fan"></div>
+      </div>
+
+      <!-- Chat Lateral da Partida -->
+      <div class="in-game-chat">
+        <h4>Chat da Sala</h4>
+        <div id="roomChatMessages" class="in-game-chat-messages"></div>
+        <input type="text" id="roomChatInput" placeholder="Conversar na sala...">
+      </div>
+    </div>
+
+    <!-- MODAL DESAFIO MATEMÁTICO -->
+    <div id="mathModal" class="modal-overlay" style="display: none;">
+      <div class="modal-content glass-card">
+        <h3>🧠 Desafio Matematixa</h3>
+        <p id="mathQuestion" class="math-title">Quanto é 5 + 5?</p>
+        <input type="number" id="mathAnswer" placeholder="Sua resposta" autofocus>
+        <button id="btnSubmitMath" class="btn-primary">Responder</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
