@@ -1,1 +1,276 @@
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#0b0e13;color:#f5f7fb}body{min-height:100vh}.hidden{display:none!important}.screen{min-height:100vh;display:grid;place-items:center}.intro{background:radial-gradient(circle at center,#202733,#090b0f);animation:fade 1.8s ease forwards}.brand{font-size:clamp(38px,10vw,92px);font-weight:900;letter-spacing:.12em;text-align:center}.brand.sub{font-size:clamp(28px,7vw,64px);margin-top:18px;opacity:0;animation:rise .7s 1s forwards}.app{min-height:100vh}.auth-panel{width:min(440px,92vw);margin:8vh auto;padding:28px;border:1px solid #29303a;border-radius:24px;background:#11161d;box-shadow:0 25px 80px #0008}.logo{font-size:24px;font-weight:800}.muted{color:#98a3b3}.tabs{display:flex;gap:8px;margin:22px 0 14px}.tab,.nav,.ghost,.mode{border:1px solid #2b3440;background:#151b23;color:#dfe6ef}.tab{padding:10px 16px;border-radius:12px}.tab.active{background:#242d39}.auth-panel input,.admin-box input,select{width:100%;padding:13px 14px;border:1px solid #303a47;border-radius:12px;background:#0c1117;color:#fff;margin:7px 0}.primary{border:0;border-radius:12px;padding:13px 17px;background:#f2f4f7;color:#111;font-weight:800;cursor:pointer}.message{min-height:22px}.topbar{height:64px;padding:0 18px;display:flex;align-items:center;gap:14px;border-bottom:1px solid #222a34;background:#0d1117;position:sticky;top:0;z-index:5}.topbar .logo{margin-right:auto}.ghost{padding:9px 13px;border-radius:10px}.layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 64px)}.sidebar{padding:18px;border-right:1px solid #222a34;background:#0e1319}.nav{width:100%;text-align:left;padding:13px;margin-bottom:8px;border-radius:12px;cursor:pointer}.nav.active{background:#232c38}.content{padding:clamp(18px,4vw,42px);max-width:1200px;width:100%;margin:auto}.page h1{font-size:clamp(28px,5vw,48px);margin:0 0 8px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}.mode,.item{padding:24px;border-radius:18px;min-height:150px;display:flex;flex-direction:column;gap:12px;text-align:left}.mode{font-size:30px;cursor:pointer}.mode b{font-size:20px}.mode span{font-size:14px;color:#98a3b3}.row{display:flex;gap:16px;align-items:center}.between{justify-content:space-between}.room-list{display:grid;gap:10px;margin-top:22px}.room{padding:18px;border:1px solid #28313d;border-radius:16px;background:#11161d;display:flex;justify-content:space-between;align-items:center}.character{text-align:center;padding:30px;border:1px solid #28313d;border-radius:18px}.avatar{font-size:100px}.admin-box{max-width:800px}.admin-box pre{min-height:180px;white-space:pre-wrap;background:#080b0f;border:1px solid #242c36;padding:16px;border-radius:12px;overflow:auto}@keyframes fade{0%{opacity:0}20%{opacity:1}80%{opacity:1}100%{opacity:0}}@keyframes rise{to{opacity:1;transform:translateY(-8px)}}@media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{display:flex;overflow:auto;border-right:0;border-bottom:1px solid #222a34;padding:10px;position:sticky;top:64px;z-index:4}.nav{min-width:max-content;width:auto;margin:0 5px}.cards{grid-template-columns:1fr}.content{padding:20px}.room{gap:12px;flex-wrap:wrap}}
+/* DESIGN COMPLETO: NEON BLUE BLUR E MESA DE POKER EM PERSPECTIVA */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body.blur-background {
+  background: radial-gradient(circle at center, #1a2a6c, #b21f1f, #fdbb2d);
+  background-attachment: fixed;
+  background-size: cover;
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: #ffffff;
+}
+
+/* Fundo desfocado azul com cartas transparentes flutuantes */
+.cards-animation-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(15px);
+  background: rgba(10, 25, 50, 0.75);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.floating-card-outline {
+  position: absolute;
+  width: 120px;
+  height: 180px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  animation: floatCards 12s infinite linear;
+}
+
+.card-1 { top: 10%; left: 15%; transform: rotate(15deg); }
+.card-2 { top: 60%; left: 80%; transform: rotate(-25deg); }
+.card-3 { top: 75%; left: 20%; transform: rotate(10deg); }
+.card-4 { top: 20%; left: 70%; transform: rotate(-10deg); }
+
+@keyframes floatCards {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(15deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+/* Glassmorphism e UI */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.logo-title {
+  text-align: center;
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px #00d2ff;
+  margin-bottom: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  margin-bottom: 20px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.btn-primary, .btn-secondary, .btn-mode, .btn-giant {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 198, 255, 0.4);
+  margin: 5px;
+}
+
+.btn-giant {
+  font-size: 1.8rem;
+  padding: 20px 40px;
+  width: 100%;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 198, 255, 0.7);
+}
+
+.badge-ceo {
+  background: linear-gradient(45deg, #ffe000, #799f0c);
+  color: #000;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 0 10px #ffe000;
+}
+
+/* --- MESA DA PARTIDA (INSPIRADA NA IMAGEM ACE'S TABLE) --- */
+.poker-table-container {
+  position: relative;
+  width: 100%;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.table-header-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.timer-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid #00d2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  box-shadow: 0 0 10px #00d2ff;
+}
+
+.poker-table {
+  position: relative;
+  width: 80%;
+  height: 60%;
+  margin: 0 auto;
+  background: radial-gradient(ellipse at center, #8a2323 0%, #3a0d0d 100%);
+  border: 15px solid #5c2c16;
+  border-radius: 200px;
+  box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: perspective(600px) rotateX(20deg);
+}
+
+.player-seat {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #222;
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+.seat-top { top: -40px; }
+.seat-left { left: -40px; }
+.seat-right { right: -40px; }
+
+.table-center {
+  display: flex;
+  gap: 20px;
+}
+
+/* Cartas de Uno Estilizadas */
+.uno-card {
+  width: 80px;
+  height: 120px;
+  border-radius: 10px;
+  border: 3px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: bold;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s;
+}
+
+.card-red { background: #ff5555; }
+.card-blue { background: #5555ff; }
+.card-green { background: #55aa55; }
+.card-yellow { background: #ffaa00; }
+.card-black { background: #222222; color: #ff00ff; }
+.deck-back { background: repeating-linear-gradient(45deg, #111, #111 10px, #333 10px, #333 20px); }
+
+/* Mão de Cartas em Leque na Frente */
+.player-hand-fan {
+  position: absolute;
+  bottom: -40px;
+  display: flex;
+  justify-content: center;
+  gap: -20px;
+}
+
+.player-hand-fan .uno-card {
+  margin-left: -25px;
+  transform-origin: bottom center;
+}
+
+.player-hand-fan .uno-card:hover {
+  transform: translateY(-30px) scale(1.15);
+  z-index: 100;
+}
+
+/* Chat em Jogo Lateral */
+.in-game-chat {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 250px;
+  height: 200px;
+  background: rgba(0,0,0,0.7);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.in-game-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+
+input[type="text"], input[type="password"], input[type="number"], select {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
