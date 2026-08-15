@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b0e13">
+  <title>UnoVelho</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="intro" class="screen intro"><div class="brand">VELHOGAMES</div><div class="brand sub">UNOVELHO</div></div>
+  <main id="app" class="app hidden">
+    <section id="auth" class="panel auth-panel">
+      <div class="logo">🃏 <span>UnoVelho</span></div>
+      <p class="muted">Entre ou crie sua conta.</p>
+      <div class="tabs"><button class="tab active" data-auth="login">Entrar</button><button class="tab" data-auth="register">Cadastrar</button></div>
+      <form id="authForm"><input id="username" placeholder="Usuário" autocomplete="username" required><input id="password" type="password" placeholder="Senha" autocomplete="current-password" required><button class="primary" type="submit">Continuar</button></form>
+      <p id="authMsg" class="message"></p>
+    </section>
+
+    <section id="game" class="hidden">
+      <header class="topbar"><div class="logo">🃏 UnoVelho</div><div id="userInfo"></div><button id="logout" class="ghost">Sair</button></header>
+      <div class="layout">
+        <aside class="sidebar"><button class="nav active" data-page="home">🎮 Jogar</button><button class="nav" data-page="online">🌐 Online</button><button class="nav" data-page="shop">🛒 Loja</button><button class="nav" data-page="character">👤 Personagem</button><button class="nav" data-page="settings">⚙️ Configuração</button><button id="adminNav" class="nav hidden" data-page="admin">👑 Administração</button></aside>
+        <section class="content">
+          <div id="home" class="page"><h1>Bem-vindo ao UnoVelho</h1><p class="muted">Escolha como quer jogar.</p><div class="cards"><button class="mode" data-action="solo">🎯<b>Solo</b><span>Contra a máquina</span></button><button class="mode" data-action="training">🧠<b>Treinamento</b><span>Aprenda e pratique</span></button><button class="mode" data-action="online">🌐<b>Online</b><span>Jogue com outras pessoas</span></button></div></div>
+          <div id="online" class="page hidden"><div class="row between"><div><h1>Jogar Online</h1><p class="muted">Salas com porta de 4 caracteres.</p></div><button id="createRoom" class="primary">Criar sala</button></div><div id="rooms" class="room-list"></div></div>
+          <div id="shop" class="page hidden"><h1>Loja</h1><div class="cards"><div class="item">🃏 Skin clássica <b>100 moedas</b></div><div class="item">✨ Skin Neon <b>250 moedas</b></div><div class="item">🧥 Roupa Taverna <b>300 moedas</b></div></div></div>
+          <div id="character" class="page hidden"><h1>Personagem</h1><div class="character"><div class="avatar">🙂</div><p>Personalização será salva no seu perfil.</p><button class="primary" id="saveCharacter">Salvar configuração</button></div></div>
+          <div id="settings" class="page hidden"><h1>Configurações</h1><label>🎵 Música <input type="checkbox" checked></label><label>🔊 Efeitos <input type="checkbox" checked></label><label>⚡ Qualidade <select><option>Alta</option><option>Média</option><option>Baixa</option></select></label></div>
+          <div id="admin" class="page hidden"><h1>Administração</h1><p class="muted">Comandos são validados no servidor.</p><div class="admin-box"><input id="adminCommand" placeholder="/help"><button id="sendCommand" class="primary">Executar</button><pre id="adminOutput"></pre></div></div>
+        </section>
+      </div>
+    </section>
+  </main>
+  <script src="/socket.io/socket.io.js"></script><script src="/app.js"></script>
+</body>
+</html>
