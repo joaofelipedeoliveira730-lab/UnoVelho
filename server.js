@@ -61,7 +61,7 @@ async function transaction(fn) {
 }
 
 async function ensureSchema() {
-  const schema = require('fs').readFileSync(path.join(__dirname, 'db', 'schema.sql'), 'utf8');
+  const schema = require('fs').readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
   await q(schema);
   const hash = await bcrypt.hash(ADMIN_PASSWORD, 12);
   await q(`INSERT INTO profiles (username, password_hash, role) VALUES ($1,$2,'admin')
