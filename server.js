@@ -61,8 +61,70 @@ async function transaction(fn) {
 }
 
 async function ensureSchema() {
-  const schema = require('fs').readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
-  await q(schema);
+  // Criação automática das tabelas direto no código, sem precisar ler arquivo externo de schema
+  await q(`
+    CREATE TABLE IF NOT EXISTS profiles (
+      id SERIAL PRIMARY KEY,
+      username VARCHAR(32) UNIQUE NOT NULL,
+      password_hash VARCHAR(255) NOT NULL,
+      role VARCHAR(16) DEFAULT 'user',
+      coins INT DEFAULT 100,
+      wins INT DEFAULT 0,
+      losses INT DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS customizations (
+      user_id INT PRIMARY KEY REFERENCES profiles(id) ON DELETE CASCADE,
+      data JSONB DEFAULT '{}'::jsonb
+    );
+
+    CREATE TABLE IF NOT EXISTS bans (
+      id SERIAL PRIMARY KEY,
+      user_id INT REFERENCES profiles(id) ON DELETE CASCADE,
+      reason TEXT,
+      active BOOLEAN DEFAULT true,
+      created_by INT REFERENCES profiles(id),
+      expires_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS rooms (
+      id SERIAL PRIMARY KEY,
+      code VARCHAR(4) UNIQUE NOT NULL,
+      owner_id INT REFERENCES profiles(id),
+      max_players INT DEFAULT 4,
+      map_key VARCHAR(64) DEFAULT 'taverna',
+      status VARCHAR(16) DEFAULT 'waiting',
+      rules JSONB DEFAULT '{}'::jsonb,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS room_players (
+      room_id INT REFERENCES rooms(id) ON DELETE CASCADE,
+      user_id INT REFERENCES profiles(id) ON DELETE CASCADE,
+      seat INT,
+      PRIMARY KEY (room_id, user_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS messages (
+      id SERIAL PRIMARY KEY,
+      room_id INT REFERENCES rooms(id) ON DELETE CASCADE,
+      sender_id INT REFERENCES profiles(id),
+      channel VARCHAR(16) DEFAULT 'room',
+      body TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS admin_actions (
+      id SERIAL PRIMARY KEY,
+      actor_id INT REFERENCES profiles(id),
+      command VARCHAR(64),
+      details JSONB,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
   const hash = await bcrypt.hash(ADMIN_PASSWORD, 12);
   await q(`INSERT INTO profiles (username, password_hash, role) VALUES ($1,$2,'admin')
            ON CONFLICT (username) DO UPDATE SET role='admin'`, [ADMIN_USERNAME, hash]);
